@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Patient Triage</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+    <div class="container mx-auto p-4 md:p-8 max-w-6xl">
+        <header class="mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-blue-900">Smart Patient Triage</h1>
+                <p class="text-slate-500">AI-Powered Risk Assessment & Department Recommendation</p>
+            </div>
+            <div id="status-indicator" class="flex items-center space-x-2">
+                <span class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></span>
+                <span class="text-sm text-slate-500">Connecting...</span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Input Form -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit">
+                <h2 class="text-xl font-semibold mb-4 text-slate-800">Patient Vitals & Symptoms</h2>
+                <form id="triageForm" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Age</label>
+                            <input type="number" id="age" required
+                                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="45">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Gender</label>
+                            <select id="gender"
+                                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                                <option>Male</option>
+                                <option>Female</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Systolic BP</label>
+                            <input type="number" id="systolic_bp" required
+                                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="120">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Diastolic BP</label>
+                            <input type="number" id="diastolic_bp" required
+                                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="80">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Heart Rate</label>
+                            <input type="number" id="heart_rate" required
+                                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="72">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Temp (°C)</label>
+                            <input type="number" step="0.1" id="temperature" required
+                                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="36.5">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Main Symptom</label>
+                        <select id="symptom"
+                            class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option>Chest Pain</option>
+                            <option>Shortness of Breath</option>
+                            <option>Fever</option>
+                            <option>Headache</option>
+                            <option>Abdominal Pain</option>
+                            <option>Dizziness</option>
+                            <option>Nausea</option>
+                            <option>Fatigue</option>
+                            <option>Cough</option>
+                            <option>Sore Throat</option>
+                            <option>Back Pain</option>
+                            <option>Rash</option>
+                            <option>Joint Pain</option>
+                            <option>Vision Problems</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Pre-existing History</label>
+                        <select id="history"
+                            class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option>None</option>
+                            <option>Hypertension</option>
+                            <option>Diabetes</option>
+                            <option>Asthma</option>
+                            <option>Heart Disease</option>
+                            <option>Obesity</option>
+                            <option>High Cholesterol</option>
+                            <option>Arthritis</option>
+                            <option>Migraine</option>
+                        </select>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors shadow-md flex justify-center items-center">
+                        <span id="btnText">Analyze Patient</span>
+                        <svg id="btnSpinner" class="animate-spin ml-2 h-5 w-5 text-white hidden"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                    </button>
+
+                    <button type="button" id="fillRandom"
+                        class="w-full mt-2 text-sm text-blue-600 hover:text-blue-800 hover:underline">
+                        Auto-fill Random Data
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Dashboard -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Main Result Cards -->
+                <div id="resultsArea" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Risk Level -->
+                    <div id="riskCard"
+                        class="bg-white p-6 rounded-xl shadow-sm border-l-8 border-slate-200 transition-all duration-300">
+                        <h3 class="text-sm font-medium text-slate-500 uppercase tracking-wide">Triage Risk Level</h3>
+                        <div class="mt-2 flex items-baseline">
+                            <span id="riskValue" class="text-4xl font-extrabold text-slate-800">-</span>
+                            <span id="riskConf" class="ml-2 text-sm text-slate-500 font-medium"></span>
+                        </div>
+                        <p id="riskDesc" class="mt-2 text-sm text-slate-600">Awaiting analysis...</p>
+                    </div>
+
+                    <!-- Department -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-medium text-slate-500 uppercase tracking-wide">Recommended Department
+                        </h3>
+                        <div class="mt-2 flex items-center">
+                            <div class="p-2 bg-blue-50 rounded-lg mr-3">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                    </path>
+                                </svg>
+                            </div>
+                            <span id="deptValue" class="text-2xl font-bold text-slate-800">-</span>
+                        </div>
+                        <p class="mt-2 text-sm text-slate-600">Based on symptoms and history.</p>
+                    </div>
+                </div>
+
+                <!-- Explanation & Insights -->
+                <div id="explanationArea" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        AI Analysis & Insights
+                    </h3>
+                    <div class="bg-slate-50 rounded-lg p-4 mb-4">
+                        <ul id="explanationList" class="space-y-2 text-sm text-slate-700">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-medium text-slate-600 mb-2">Confidence Metric</h4>
+                        <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                            <div id="confBar" class="h-full bg-blue-500 rounded-full transition-all duration-1000"
+                                style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualization -->
+                <div id="chartArea" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="text-sm font-medium text-slate-500 uppercase tracking-wide mb-4">Risk Probability
+                        Analysis</h3>
+                    <canvas id="riskChart" height="100"></canvas>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState"
+                    class="bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 p-12 text-center h-64 flex flex-col justify-center items-center">
+                    <svg class="w-16 h-16 text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                        </path>
+                    </svg>
+                    <h3 class="text-lg font-medium text-slate-400">Ready to Analyze</h3>
+                    <p class="text-slate-400">Enter patient details to generate AI triage prediction.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check Health
+        fetch('/api/health')
+            .then(res => res.json())
+            .then(data => {
+                const badge = document.getElementById('status-indicator');
+                if (data.status === 'healthy') {
+                    badge.innerHTML = `
+                        <span class="w-2.5 h-2.5 bg-green-500 rounded-full"></span>
+                        <span class="text-xs font-semibold text-green-700">System Online</span>
+                    `;
+                }
+            })
+            .catch(() => {
+                const badge = document.getElementById('status-indicator');
+                badge.innerHTML = `
+                        <span class="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                        <span class="text-xs font-semibold text-red-700">Offline</span>
+                    `;
+            });
+
+        // Form Submission
+        document.getElementById('triageForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Loading State
+            const btn = e.target.querySelector('button');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+
+            btn.disabled = true;
+            btnText.textContent = 'Analyzing...';
+            btnSpinner.classList.remove('hidden');
+
+            // Gather Data
+            const data = {
+                age: parseInt(document.getElementById('age').value),
+                gender: document.getElementById('gender').value,
+                systolic_bp: parseInt(document.getElementById('systolic_bp').value),
+                diastolic_bp: parseInt(document.getElementById('diastolic_bp').value),
+                heart_rate: parseInt(document.getElementById('heart_rate').value),
+                temperature: parseFloat(document.getElementById('temperature').value),
+                symptom: document.getElementById('symptom').value,
+                history: document.getElementById('history').value
+            };
+
+            try {
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) throw new Error('Prediction failed');
+
+                const result = await response.json();
+                displayResults(result);
+
+            } catch (error) {
+                console.error(error);
+                alert('Error processing request. Please check connection.');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Analyze Patient';
+                btnSpinner.classList.add('hidden');
+            }
+        });
+
+        function displayResults(data) {
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('resultsArea').classList.remove('hidden');
+            document.getElementById('explanationArea').classList.remove('hidden');
+            document.getElementById('chartArea').classList.remove('hidden');
+
+            // Risk Level Logic
+            const riskCard = document.getElementById('riskCard');
+            const riskValue = document.getElementById('riskValue');
+            const riskDesc = document.getElementById('riskDesc');
+
+            riskValue.textContent = data.risk_level;
+
+            // Dynamic Styling based on Risk
+            riskCard.classList.remove('border-green-500', 'border-yellow-400', 'border-red-500', 'bg-red-50', 'bg-green-50', 'bg-yellow-50');
+            riskValue.classList.remove('text-green-700', 'text-yellow-700', 'text-red-700');
+
+            if (data.risk_level === 'High') {
+                riskCard.classList.add('border-red-500', 'bg-red-50');
+                riskValue.classList.add('text-red-700');
+                riskDesc.textContent = "Immediate Medical Attention Required";
+            } else if (data.risk_level === 'Medium') {
+                riskCard.classList.add('border-yellow-400', 'bg-yellow-50');
+                riskValue.classList.add('text-yellow-700');
+                riskDesc.textContent = "Priority Assessment Recommended";
+            } else {
+                riskCard.classList.add('border-green-500', 'bg-green-50');
+                riskValue.classList.add('text-green-700');
+                riskDesc.textContent = "Standard Triage Protocol";
+            }
+
+            // Department
+            document.getElementById('deptValue').textContent = data.department;
+
+            // Explanations
+            const list = document.getElementById('explanationList');
+            list.innerHTML = '';
+            data.explanation.forEach(exp => {
+                const li = document.createElement('li');
+                li.className = "flex items-start";
+                li.innerHTML = `<span class="mr-2 text-blue-500">•</span> ${exp}`;
+                list.appendChild(li);
+            });
+
+            // Confidence Bar
+            const conf = Math.round(data.confidence_score * 100);
+            document.getElementById('confBar').style.width = `${conf}%`;
+            document.getElementById('riskConf').textContent = `${conf}% Conf.`;
+
+            // Render Chart
+            renderChart(data.risk_probabilities);
+        }
+
+        let chartInstance = null;
+        function renderChart(probs) {
+            const ctx = document.getElementById('riskChart').getContext('2d');
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            const labels = Object.keys(probs);
+            const data = Object.values(probs).map(p => (p * 100).toFixed(1));
+
+            // Color mapping
+            const bgColors = labels.map(l => {
+                if (l === 'High') return 'rgba(239, 68, 68, 0.7)'; // Red
+                if (l === 'Medium') return 'rgba(234, 179, 8, 0.7)'; // Yellow
+                return 'rgba(34, 197, 94, 0.7)'; // Green
+            });
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Risk Probability (%)',
+                        data: data,
+                        backgroundColor: bgColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    }
+                }
+            });
+        }
+
+        // Auto-fill Utility
+        document.getElementById('fillRandom').addEventListener('click', () => {
+            document.getElementById('age').value = Math.floor(Math.random() * 60) + 18;
+            document.getElementById('systolic_bp').value = Math.floor(Math.random() * 60) + 100;
+            document.getElementById('diastolic_bp').value = Math.floor(Math.random() * 40) + 60;
+            document.getElementById('heart_rate').value = Math.floor(Math.random() * 60) + 60;
+            document.getElementById('temperature').value = (Math.random() * 4 + 36).toFixed(1);
+
+            const symptoms = document.getElementById('symptom').options;
+            document.getElementById('symptom').selectedIndex = Math.floor(Math.random() * symptoms.length);
+
+            const history = document.getElementById('history').options;
+            document.getElementById('history').selectedIndex = Math.floor(Math.random() * history.length);
+        });
+    </script>
+</body>
+
+</html>

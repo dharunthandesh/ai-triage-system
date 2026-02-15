@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Doctor Login | Smart Triage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #e3f2fd, #ffffff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #1565c0;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            background-color: #1565c0;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0d47a1;
+        }
+
+        .link {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .link a {
+            color: #1565c0;
+            text-decoration: none;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <h2>Doctor Login</h2>
+
+    <input type="text" id="doctorId" placeholder="Doctor ID">
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+
+    <div class="link">
+        Patient? <a href="patient-login.html">Login here</a>
+    </div>
+
+    <div id="error" class="error"></div>
+</div>
+
+<script>
+    // Dummy doctor credentials
+    const DUMMY_DOCTOR = {
+        id: "DOC123",
+        password: "doctorpass"
+    };
+
+    function login() {
+        const doctorId = document.getElementById("doctorId").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const errorDiv = document.getElementById("error");
+
+        errorDiv.innerText = "";
+
+        if (doctorId === DUMMY_DOCTOR.id && password === DUMMY_DOCTOR.password) {
+            // Login successful → redirect to dashboard
+            window.location.href = "doctor-dashboard.html";
+        } else {
+            // Invalid credentials
+            errorDiv.innerText = "Invalid Doctor ID or Password";
+        }
+    }
+</script>
+
+</body>
+</html>

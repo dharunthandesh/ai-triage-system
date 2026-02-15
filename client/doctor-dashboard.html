@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Doctor Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+
+  <h1 class="text-3xl font-bold mb-6">Doctor Dashboard - Patient Priority</h1>
+
+  <div id="patient-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Patient cards will be inserted here -->
+  </div>
+
+  <script>
+    // Function to assign color based on priority level
+    function getPriorityClass(level) {
+      if(level === "High") return "bg-red-100 border-red-500 text-red-700";
+      if(level === "Medium") return "bg-yellow-100 border-yellow-500 text-yellow-700";
+      return "bg-green-100 border-green-500 text-green-700";
+    }
+
+    // Fetch patients from backend
+    async function fetchPatients() {
+      try {
+        const res = await axios.get("http://127.0.0.1:8000/api/patients");
+        const patients = res.data.patients;
+
+        const container = document.getElementById("patient-list");
+        container.innerHTML = "";
+
+        patients.forEach(p => {
+          const card = document.createElement("div");
+          card.className = `border-l-4 p-4 rounded shadow ${getPriorityClass(p.priority_level)}`;
+
+          card.innerHTML = `
+            <h2 class="text-xl font-semibold">${p.name}</h2>
+            <p>Age: ${p.age || "N/A"}</p>
+            <p>Severity: ${p.severity}</p>
+            <p>Priority: <span class="font-bold">${p.priority_level}</span></p>
+            <p>Risk Level: ${p.risk_level}</p>
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error("Error fetching patients:", err);
+      }
+    }
+
+    fetchPatients();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up - Smart Triage</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd, #ffffff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            width: 350px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #1565c0;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: #1565c0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0d47a1;
+        }
+
+        .link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .link a {
+            color: #1565c0;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Create Account</h2>
+
+    <input type="text" id="full_name" placeholder="Full Name">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+
+    <select id="role">
+        <option value="patient">Patient</option>
+        <option value="doctor">Doctor</option>
+    </select>
+
+    <button onclick="signUp()">Sign Up</button>
+
+    <div class="link">
+        Already have an account as patient? <a href="patient-login.html">Login As Patient</a> <br> <br>
+        Already have an account as doctor? <a href="doctor-login.html">Login As Doctor</a>
+    </div>
+</div>
+
+<script>
+const supabase = window.supabase.createClient(
+  "https://awbanltkybranbhljkuw.supabase.co",
+   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3YmFubHRreWJyYW5iaGxqa3V3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwNjAxOTksImV4cCI6MjA4NjYzNjE5OX0.7HszwS7OMGy8c3C_7u6YHDGkE70nWLBvEYzya8Knw00"
+);
+
+async function signUp() {
+    const full_name = document.getElementById("full_name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const role = document.getElementById("role").value;
+
+    if (!full_name || !email || !password) {
+        alert("Please fill all fields.");
+        return;
+    }
+
+    // Step 1: Sign up user
+    const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    const user = data.user;
+
+    // Step 2: Insert into profiles table
+    const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+            id: user.id,
+            full_name: full_name,
+            role: role
+        });
+
+    if (profileError) {
+        alert("Profile creation failed.");
+        return;
+    }
+
+    alert("Account created successfully!");
+    window.location.href = "patient-login.html";
+}
+</script>
+
+</body>
+</html>

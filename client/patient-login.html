@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Login | Smart Triage</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-900 min-h-screen flex items-center justify-center transition-all duration-300">
+
+  <div class="w-full max-w-sm bg-white dark:bg-slate-800 shadow-md rounded-xl p-8 border border-slate-200 dark:border-slate-700">
+
+    <h2 class="text-2xl font-semibold text-center text-blue-900 dark:text-white mb-2">
+      Patient Login
+    </h2>
+    <p class="text-sm text-slate-500 dark:text-slate-400 text-center mb-6">
+      Access your health dashboard
+    </p>
+
+    <form id="patientLoginForm" class="space-y-4">
+
+      <!-- Phone -->
+      <div>
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-300">
+          Phone Number
+        </label>
+        <input 
+          type="tel" 
+          id="phone" 
+          required
+          placeholder="Enter phone number"
+          class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 
+                 bg-white dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label class="text-sm font-medium text-slate-700 dark:text-slate-300">
+          Password
+        </label>
+        <input 
+          type="password" 
+          id="password" 
+          required
+          placeholder="Enter password"
+          class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 
+                 bg-white dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+      </div>
+
+      <!-- Login Button -->
+      <button 
+        type="submit"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition">
+        Login
+      </button>
+
+      <!-- Sign Up Button -->
+      <button 
+        type="button"
+        onclick="window.location.href='signup.html'"
+        class="w-full border border-blue-600 text-blue-600 hover:bg-blue-50 
+               dark:hover:bg-slate-700 font-medium py-2.5 rounded-lg transition">
+        Create New Account
+      </button>
+
+    </form>
+
+    <!-- Switch to Doctor Login -->
+    <div class="text-center mt-6">
+      <a href="doctor-login.html" 
+         class="text-sm text-blue-600 hover:underline">
+        Login as Doctor
+      </a>
+    </div>
+
+    <div id="errorMsg" class="text-red-500 text-sm mt-4 text-center hidden"></div>
+
+  </div>
+
+  <!-- Dark Mode Toggle -->
+  <button id="themeToggle"
+    class="fixed bottom-5 right-5 bg-blue-600 text-white p-3 rounded-full shadow-md hover:scale-110 transition">
+    🌙
+  </button>
+
+<script>
+
+  // ============================
+  // Demo Login Logic (Temporary)
+  // ============================
+
+  document.getElementById("patientLoginForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const phone = document.getElementById("phone").value;
+    const password = document.getElementById("password").value;
+
+    // ⚠️ Replace this with Supabase DB validation
+    if (phone === "9999999999" && password === "patient123") {
+      window.location.href = "index.html";
+    } else {
+      showError("Invalid phone number or password.");
+    }
+  });
+
+  function showError(message) {
+    const errorBox = document.getElementById("errorMsg");
+    errorBox.textContent = message;
+    errorBox.classList.remove("hidden");
+  }
+
+  // ============================
+  // Dark Mode Toggle
+  // ============================
+
+  const toggleBtn = document.getElementById("themeToggle");
+
+  toggleBtn.addEventListener("click", () => {
+    document.documentElement.classList.toggle("dark");
+
+    toggleBtn.textContent =
+      document.documentElement.classList.contains("dark") ? "☀️" : "🌙";
+  });
+
+</script>
+
+</body>
+</html>
